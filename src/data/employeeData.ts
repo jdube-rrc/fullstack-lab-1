@@ -1,5 +1,4 @@
 import type { Department } from "../types/departmentTypes";
-import type { Employee } from "../types/departmentTypes";
 
 export const departments: Department[] = [
     {
