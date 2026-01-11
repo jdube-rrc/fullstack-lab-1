@@ -40,9 +40,8 @@ p {
 ul {
     list-style: none;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
-    max-width: 600px;
     margin: 0 auto;
     padding: 2rem;
 }
