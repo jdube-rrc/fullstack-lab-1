@@ -1,19 +1,3 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    line-height: 1.6;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    padding: 2rem;
-    gap: 2rem;
-}
-
 img {
     width: 200px;
     height: auto;
@@ -22,13 +6,13 @@ img {
 
 h1 {
     font-size: 2.5rem;
-    text-align: center;
+    text-align: left;
     margin-bottom: 0.5rem;
 }
 
 p {
     font-size: 1.1rem;
-    text-align: center;
+    text-align: left;
     margin-bottom: 1rem;
 }
 
@@ -40,11 +24,29 @@ p {
 ul {
     list-style: none;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
-    max-width: 600px;
     margin: 0 auto;
     padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+    ul {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    ul {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    ul {
+        grid-template-columns: repeat(1, 1fr);
+    }
 }
 
 li {
@@ -57,6 +59,7 @@ li {
 }
 
 .employee-name {
+    white-space: nowrap;
     flex-shrink: 0;
     font-weight: 500;
 }
