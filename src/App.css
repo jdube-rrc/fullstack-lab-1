@@ -69,6 +69,19 @@ li {
     font-size: 0.9rem;
 }
 
+.new-employee-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    width: 100%
+}
+
+.new-employee-form button {
+    padding: 0.25rem;
+    font-size: 1rem;
+}
+
 footer {
     border-top: 1px solid #ccc;
     padding-top: 2rem;
