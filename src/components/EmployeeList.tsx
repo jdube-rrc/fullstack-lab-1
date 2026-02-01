@@ -24,7 +24,7 @@ interface EmployeeListProps {
 export function EmployeeList({ departments }: EmployeeListProps) {
     return (
         <div id="main">
-            <ul>
+            <ul className="employee-list">
                 {departments.map((dept) => 
                     dept.employees.map((emp, index) => (
                         <EmployeeItem 
