@@ -1,14 +1,15 @@
 import { type FormEvent } from "react";
 import type { Employee, Department } from "../types/departmentTypes";
 import { useFormInput } from "../hooks/useFormInput";
+import { createEmployee } from "../services/employeeService";
 
 interface NewEmployeeFormProps {
     departments: Department[];
-    onAddEmployee: (departmentName: string, employee: Employee) => void;
+    onDepartmentsChange: (departments: Department[]) => void;
 }
 
-// is passed the departments and the onAddEmployee callback from Page.tsx
-export default function NewEmployeeForm({ departments, onAddEmployee }: NewEmployeeFormProps) {
+// is passed the departments and callback to update them from Page.tsx
+export default function NewEmployeeForm({ departments, onDepartmentsChange }: NewEmployeeFormProps) {
     const firstName = useFormInput<string>("");
     const lastName = useFormInput<string>("");
     const selectedDepartment = useFormInput<string>("");
@@ -16,27 +17,28 @@ export default function NewEmployeeForm({ departments, onAddEmployee }: NewEmplo
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        // Validate each input using the hook's validate method with validation callbacks
-        const isFirstNameValid = firstName.validate((value) => 
-            value.trim().length < 3 ? "First name must be at least 3 characters long." : null
-        );
-        const isLastNameValid = lastName.validate(() => null); // No validation required for lastName
-        const isDepartmentValid = selectedDepartment.validate((value) => 
-            !value ? "Please choose a department." : null
-        );
+        // Clear previous error messages
+        firstName.setMessage(null);
+        selectedDepartment.setMessage(null);
 
-        // if any validation fails stop submission
-        if (!isFirstNameValid || !isLastNameValid || !isDepartmentValid) {
-            return;
-        }
-
-        // build the employee object to add to the chosen department
+        // build the employee object
         const newEmployee: Employee = {
             firstName: firstName.value.trim(),
             lastName: lastName.value.trim(),
         };
 
-        onAddEmployee(selectedDepartment.value, newEmployee);
+        // Use the service to validate and create the employee
+        const result = createEmployee(departments, selectedDepartment.value, newEmployee);
+
+        if (!result.success) {
+            // Set error messages on the hooks
+            if (result.errors.firstName) firstName.setMessage(result.errors.firstName);
+            if (result.errors.department) selectedDepartment.setMessage(result.errors.department);
+            return;
+        }
+
+        // Update departments with the result from the service
+        onDepartmentsChange(result.departments);
 
         // reset the form using the hook's reset method
         firstName.reset("");
