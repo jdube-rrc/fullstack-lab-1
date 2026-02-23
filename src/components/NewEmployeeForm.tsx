@@ -1,5 +1,6 @@
-import { useState, type FormEvent } from "react";
+import { type FormEvent } from "react";
 import type { Employee, Department } from "../types/departmentTypes";
+import { useFormInput } from "../hooks/useFormInput";
 
 interface NewEmployeeFormProps {
     departments: Department[];
@@ -8,79 +9,71 @@ interface NewEmployeeFormProps {
 
 // is passed the departments and the onAddEmployee callback from Page.tsx
 export default function NewEmployeeForm({ departments, onAddEmployee }: NewEmployeeFormProps) {
-
-    const [firstName, setFirstName] = useState<string>("");
-    const [lastName, setLastName] = useState<string>("");
-    const [selectedDepartment, setSelectedDepartment] = useState<string>("");
-    const [errors, setErrors] = useState<string[]>([]);
+    const firstName = useFormInput<string>("");
+    const lastName = useFormInput<string>("");
+    const selectedDepartment = useFormInput<string>("");
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        setErrors([]); // clear old validation messages
 
-        // stores validation messages in an array so we can show all at once
-        const validationMessages: string[] = [];
-        if (firstName.trim().length < 3) {
-            validationMessages.push("First name must be at least 3 characters long.");
-        }
-        if (!selectedDepartment) {
-            validationMessages.push("Please choose a department.");
-        }
+        // Validate each input using the hook's validate method with validation callbacks
+        const isFirstNameValid = firstName.validate((value) => 
+            value.trim().length < 3 ? "First name must be at least 3 characters long." : null
+        );
+        const isLastNameValid = lastName.validate(() => null); // No validation required for lastName
+        const isDepartmentValid = selectedDepartment.validate((value) => 
+            !value ? "Please choose a department." : null
+        );
 
-        if (validationMessages.length > 0) {
-            setErrors(validationMessages);
+        // if any validation fails stop submission
+        if (!isFirstNameValid || !isLastNameValid || !isDepartmentValid) {
             return;
         }
 
         // build the employee object to add to the chosen department
         const newEmployee: Employee = {
-            firstName: firstName.trim(),
-            lastName: lastName.trim(),
+            firstName: firstName.value.trim(),
+            lastName: lastName.value.trim(),
         };
 
-        onAddEmployee(selectedDepartment, newEmployee);
+        onAddEmployee(selectedDepartment.value, newEmployee);
 
-        // reset the form
-        setFirstName("");
-        setLastName("");
-        setSelectedDepartment("");
+        // reset the form using the hook's reset method
+        firstName.reset("");
+        lastName.reset("");
+        selectedDepartment.reset("");
     };
 
     return (
         <section>
             <h2>Add New Employee</h2>
-            {errors.length > 0 && (
-                <ul className="error-messages">
-                    {errors.map((message, index) => (
-                        <li key={index}>{message}</li>
-                    ))}
-                </ul>
-            )}
             <form className="new-employee-form" onSubmit={handleSubmit}>
                 {/* when the user types it will update state of firstName and lastName */}
                 <label>
                     First Name:
                     <input
                         name="firstName"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        value={firstName.value}
+                        onChange={(e) => firstName.setValue(e.target.value)}
                     />
+                    {firstName.message && <span className="error-message">{firstName.message}</span>}
                 </label>
                 <label>
                     Last Name:
                     <input
                         name="lastName"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
+                        value={lastName.value}
+                        onChange={(e) => lastName.setValue(e.target.value)}
                     />
+                    {lastName.message && <span className="error-message">{lastName.message}</span>}
                 </label>
                 <label>
                     {/* when the user selects a department it will update state of selectedDepartment */}
                     Department: 
                     <select
                         name="department"
-                        value={selectedDepartment}
-                        onChange={(e) => setSelectedDepartment(e.target.value)}
+                        value={selectedDepartment.value}
+                        onChange={(e) => selectedDepartment.setValue(e.target.value)}
                     >
                         {/* options for departments */}
                         <option value="">Select a department</option>
@@ -90,6 +83,7 @@ export default function NewEmployeeForm({ departments, onAddEmployee }: NewEmplo
                             </option>
                         ))}
                     </select>
+                    {selectedDepartment.message && <span className="error-message">{selectedDepartment.message}</span>}
                 </label>
                 <hr />
                 <button type="submit">Add Employee</button>
