@@ -1,32 +1,19 @@
+import { useState } from "react";
 import type { Role } from "../../types/departmentTypes";
 import { managementData } from "../../data/managementData";
-
-interface RoleItemProps {
-    person: Role;
-}
-
-function RoleItem({ person }: RoleItemProps) {
-    const fullName = `${person.firstName} ${person.lastName}`;
-
-    return (
-        <li>
-            <span className="employee-name">{fullName}</span>
-            <span className="department-name">{person.role}</span>
-        </li>
-    );
-}
+import { OrganizationList } from "../OrganizationList";
+import NewOrganizationForm from "../NewOrganizationForm";
 
 export function Organization() {
+    const [organization, setOrganization] = useState<Role[]>(managementData);
+
     return (
-        <div id="main">
-            <ul className="employee-list">
-                {managementData.map((person, index) => (
-                    <RoleItem
-                        key={`${person.firstName}-${person.lastName}-${index}`}
-                        person={person}
-                    />
-                ))}
-            </ul>
-        </div>
+        <>
+            <OrganizationList organization={organization} />
+            <NewOrganizationForm
+                organization={organization}
+                onOrganizationChange={setOrganization}
+            />
+        </>
     );
 }
