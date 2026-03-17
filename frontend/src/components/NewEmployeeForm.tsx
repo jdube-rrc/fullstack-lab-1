@@ -14,7 +14,7 @@ export default function NewEmployeeForm({ departments, onDepartmentsChange }: Ne
     const lastName = useFormInput<string>("");
     const selectedDepartment = useFormInput<string>("");
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         // Clear previous error messages
@@ -28,7 +28,7 @@ export default function NewEmployeeForm({ departments, onDepartmentsChange }: Ne
         };
 
         // Use the service to validate and create the employee
-        const result = createEmployee(departments, selectedDepartment.value, newEmployee);
+        const result = await createEmployee(selectedDepartment.value, newEmployee);
 
         if (!result.success) {
             // Set error messages on the hooks

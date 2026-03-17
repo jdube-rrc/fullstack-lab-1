@@ -1,17 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Role } from "../../types/departmentTypes";
-import { managementData } from "../../data/managementData";
 import { OrganizationList } from "../OrganizationList";
 import NewOrganizationForm from "../NewOrganizationForm";
+import { fetchOrganization } from "../../services/organizationService";
 
 export function Organization() {
-    const [organization, setOrganization] = useState<Role[]>(managementData);
+    const [organization, setOrganization] = useState<Role[]>([]);
+
+    useEffect(() => {
+        fetchOrganization()
+            .then(setOrganization)
+            .catch(() => setOrganization([]));
+    }, []);
 
     return (
         <>
             <OrganizationList organization={organization} />
             <NewOrganizationForm
-                organization={organization}
                 onOrganizationChange={setOrganization}
             />
         </>

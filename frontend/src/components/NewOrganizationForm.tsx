@@ -4,17 +4,16 @@ import { useFormInput } from "../hooks/useFormInput";
 import { createOrganizationEntry } from "../services/organizationService";
 
 interface NewOrganizationFormProps {
-    organization: Role[];
     onOrganizationChange: (organization: Role[]) => void;
 }
 
 // Form component for adding new organization entries
-export default function NewOrganizationForm({ organization, onOrganizationChange }: NewOrganizationFormProps) {
+export default function NewOrganizationForm({ onOrganizationChange }: NewOrganizationFormProps) {
     const firstName = useFormInput<string>("");
     const lastName = useFormInput<string>("");
     const role = useFormInput<string>("");
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         // Clear previous error messages
@@ -30,7 +29,7 @@ export default function NewOrganizationForm({ organization, onOrganizationChange
         };
 
         // Use the service to validate and create the entry
-        const result = createOrganizationEntry(organization, newEntry);
+        const result = await createOrganizationEntry(newEntry);
 
         if (!result.success) {
             // Set error messages on the hooks

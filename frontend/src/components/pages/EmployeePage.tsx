@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EmployeeList } from "../EmployeeList";
 import type { Department } from "../../types/departmentTypes";
 import NewEmployeeForm from "../NewEmployeeForm";
+import { fetchDepartments } from "../../services/employeeService";
 
-interface EmployeePageProps {
-    departments: Department[];
-}
+export function EmployeePage() {
+    const [departmentList, setDepartmentList] = useState<Department[]>([]);
 
-export function EmployeePage({ departments }: EmployeePageProps) {
-    // keep the departments in state so the list updates when we add employees
-    const [departmentList, setDepartmentList] = useState<Department[]>(departments);
+    useEffect(() => {
+        fetchDepartments()
+            .then(setDepartmentList)
+            .catch(() => setDepartmentList([]));
+    }, []);
 
     return (
         <>
