@@ -21,7 +21,7 @@ app.use(
 			callback(new Error("Origin not allowed by CORS."));
 		},
 		methods: ["GET", "POST", "OPTIONS"],
-		allowedHeaders: ["Content-Type"],
+		allowedHeaders: ["Content-Type", "Authorization"],
 	})
 );
 app.use("/api", employeeRouter);
