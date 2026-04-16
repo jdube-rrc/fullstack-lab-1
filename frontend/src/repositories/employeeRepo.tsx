@@ -1,5 +1,4 @@
 import type { Employee, Department } from "../types/departmentTypes";
-
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
 export async function fetchDepartments(): Promise<Department[]> {
@@ -12,12 +11,14 @@ export async function fetchDepartments(): Promise<Department[]> {
 
 export async function addEmployeeToDepartment(
     departmentName: string,
-    employee: Employee
+    employee: Employee,
+    token: string | null
 ): Promise<Response> {
     return fetch(`${API_BASE}/departments/${encodeURIComponent(departmentName)}/employees`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(employee),
     });

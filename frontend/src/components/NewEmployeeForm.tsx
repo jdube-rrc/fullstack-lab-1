@@ -2,6 +2,7 @@ import { type FormEvent } from "react";
 import type { Employee, Department } from "../types/departmentTypes";
 import { useFormInput } from "../hooks/useFormInput";
 import { createEmployee } from "../services/employeeService";
+import { useAuth, useUser, SignInButton } from '@clerk/react';
 
 interface NewEmployeeFormProps {
     departments: Department[];
@@ -10,6 +11,8 @@ interface NewEmployeeFormProps {
 
 // is passed the departments and callback to update them from Page.tsx
 export default function NewEmployeeForm({ departments, onDepartmentsChange }: NewEmployeeFormProps) {
+    const { isSignedIn } = useUser();
+    const { getToken } = useAuth();
     const firstName = useFormInput<string>("");
     const lastName = useFormInput<string>("");
     const selectedDepartment = useFormInput<string>("");
@@ -27,8 +30,10 @@ export default function NewEmployeeForm({ departments, onDepartmentsChange }: Ne
             lastName: lastName.value.trim(),
         };
 
+        const token = await getToken();
+
         // Use the service to validate and create the employee
-        const result = await createEmployee(selectedDepartment.value, newEmployee);
+        const result = await createEmployee(selectedDepartment.value, newEmployee, token);
 
         if (!result.success) {
             // Set error messages on the hooks
@@ -45,6 +50,20 @@ export default function NewEmployeeForm({ departments, onDepartmentsChange }: Ne
         lastName.reset("");
         selectedDepartment.reset("");
     };
+    
+    if (!isSignedIn) {
+        return (
+            <section>
+                <h2>Add New Employee</h2>
+                <div className="auth-required">
+                    <p>You must be logged in to add a new employee.</p>
+                    <SignInButton mode="modal">
+                        <button type="button" className="auth-required-button">Log in to continue</button>
+                    </SignInButton>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section>

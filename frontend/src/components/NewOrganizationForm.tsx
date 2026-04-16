@@ -2,6 +2,7 @@ import { type FormEvent } from "react";
 import type { Role } from "../types/departmentTypes";
 import { useFormInput } from "../hooks/useFormInput";
 import { createOrganizationEntry } from "../services/organizationService";
+import { useAuth, useUser, SignInButton } from '@clerk/react';
 
 interface NewOrganizationFormProps {
     onOrganizationChange: (organization: Role[]) => void;
@@ -9,6 +10,8 @@ interface NewOrganizationFormProps {
 
 // Form component for adding new organization entries
 export default function NewOrganizationForm({ onOrganizationChange }: NewOrganizationFormProps) {
+    const { isSignedIn } = useUser();
+    const { getToken } = useAuth();
     const firstName = useFormInput<string>("");
     const lastName = useFormInput<string>("");
     const role = useFormInput<string>("");
@@ -28,8 +31,10 @@ export default function NewOrganizationForm({ onOrganizationChange }: NewOrganiz
             role: role.value.trim(),
         };
 
+        const token = await getToken();
+
         // Use the service to validate and create the entry
-        const result = await createOrganizationEntry(newEntry);
+        const result = await createOrganizationEntry(newEntry, token);
 
         if (!result.success) {
             // Set error messages on the hooks
@@ -47,6 +52,20 @@ export default function NewOrganizationForm({ onOrganizationChange }: NewOrganiz
         lastName.reset("");
         role.reset("");
     };
+
+    if (!isSignedIn) {
+        return (
+            <section>
+                <h2>Add New Organization Entry</h2>
+                <div className="auth-required">
+                    <p>You must be logged in to add a new organization entry.</p>
+                    <SignInButton mode="modal">
+                        <button type="button" className="auth-required-button">Log in to continue</button>
+                    </SignInButton>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section>
