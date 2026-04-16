@@ -5,6 +5,11 @@ import { managementData } from '../src/data/managementData';
 const prisma = new PrismaClient();
 
 async function main() {
+
+  await prisma.employee.deleteMany();
+  await prisma.department.deleteMany();
+  await prisma.role.deleteMany();
+
   // Seed Departments and Employees
   for (const dept of departments) {
     const createdDept = await prisma.department.create({
