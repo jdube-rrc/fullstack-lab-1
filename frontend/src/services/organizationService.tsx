@@ -20,9 +20,10 @@ export async function fetchOrganization(): Promise<Role[]> {
 
 // updated to return a promise with success status and either the updated organization or validation errors
 export async function createOrganizationEntry(
-    newEntry: Role
+    newEntry: Role,
+    token: string | null
 ): Promise<{ success: true; organization: Role[] } | { success: false; errors: OrganizationValidationResult["errors"] }> {
-    const response = await addRoleToOrganization(newEntry);
+    const response = await addRoleToOrganization(newEntry, token);
     const responseData = await response.json();
 
     if (!response.ok) {
