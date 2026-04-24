@@ -3,6 +3,7 @@ import type { Employee, Department } from "../types/departmentTypes";
 import { useFormInput } from "../hooks/useFormInput";
 import { createEmployee } from "../services/employeeService";
 import { useAuth, useUser, SignInButton } from '@clerk/react';
+import { toast } from 'sonner';
 
 interface NewEmployeeFormProps {
     departments: Department[];
@@ -39,11 +40,13 @@ export default function NewEmployeeForm({ departments, onDepartmentsChange }: Ne
             // Set error messages on the hooks
             if (result.errors.firstName) firstName.setMessage(result.errors.firstName);
             if (result.errors.department) selectedDepartment.setMessage(result.errors.department);
+            toast.error("Failed to add employee.");
             return;
         }
 
         // Update departments with the result from the service
         onDepartmentsChange(result.departments);
+        toast.success(`${firstName.value.trim()} added successfully!`);
 
         // reset the form using the hook's reset method
         firstName.reset("");
