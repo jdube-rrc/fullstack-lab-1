@@ -3,6 +3,7 @@ import type { Role } from "../types/departmentTypes";
 import { useFormInput } from "../hooks/useFormInput";
 import { createOrganizationEntry } from "../services/organizationService";
 import { useAuth, useUser, SignInButton } from '@clerk/react';
+import { toast } from 'sonner';
 
 interface NewOrganizationFormProps {
     onOrganizationChange: (organization: Role[]) => void;
@@ -41,11 +42,13 @@ export default function NewOrganizationForm({ onOrganizationChange }: NewOrganiz
             if (result.errors.firstName) firstName.setMessage(result.errors.firstName);
             if (result.errors.lastName) lastName.setMessage(result.errors.lastName);
             if (result.errors.role) role.setMessage(result.errors.role);
+            toast.error("Failed to add organization entry.");
             return;
         }
 
         // Update organization with the result from the service
         onOrganizationChange(result.organization);
+        toast.success(`${firstName.value.trim()} ${lastName.value.trim()} added successfully!`);
 
         // Reset the form using the hook's reset method
         firstName.reset("");
